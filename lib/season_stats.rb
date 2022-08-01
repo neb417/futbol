@@ -42,12 +42,15 @@ class SeasonStats
       goals[game[:team_id]] += game[:goals].to_f
       shots[game[:team_id]] += game[:shots].to_f
     end
+    calculate_accuracy(goals, shots)
+  end
 
-    team_id_accuracy = Hash.new
+  def calculate_accuracy(goals, shots)
+    accuracy = Hash.new
     goals.each do |team, goals|
-      team_id_accuracy[team] = goals / shots[team]
+      accuracy[team] = goals / shots[team]
     end
-    team_id_accuracy
+    accuracy
   end
 
   def coach_win_percentage
@@ -60,7 +63,10 @@ class SeasonStats
       wins[coach] += 1 if result == "WIN"
       all_games[coach] += 1
     end
+    calculate_win_percentage(wins, all_games)
+  end
 
+  def calculate_win_percentage(wins, all_games)
     win_percentage = Hash.new
     wins.map do |coach, num_wins|
       win_percentage[coach] = num_wins.to_f / all_games[coach]
