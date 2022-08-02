@@ -1,126 +1,57 @@
-require 'csv'
-require 'pry'
-require 'data_warehouse'
-require 'season_stats'
+require "csv"
+require "pry"
+require_relative "data_warehouse"
+require_relative "game_stats"
+require_relative "league_stats"
+require_relative "team_stats"
+require_relative "season_stats"
 
 class StatTracker
-
   attr_reader :data_warehouse
 
   def initialize(games, teams, game_teams)
     @data_warehouse = DataWarehouse.new(games, teams, game_teams)
+    @game_stats = GameStats.new(@data_warehouse)
     @league_stats = LeagueStats.new(@data_warehouse)
   end
 
   def self.from_csv(locations)
     StatTracker.new(
-    CSV.read(locations[:games], headers: true, header_converters: :symbol),
-    CSV.read(locations[:teams], headers: true, header_converters: :symbol),
-    CSV.read(locations[:game_teams], headers: true, header_converters: :symbol)
-    )
-  end
-
-  def all_goals
-    #array of all goals
-    goals = @games.map do |row|
-      row[:away_goals].to_i + row[:home_goals].to_i
-    end
-
-    goals
+      CSV.read(locations[:games], headers: true, header_converters: :symbol),
+      CSV.read(locations[:teams], headers: true, header_converters: :symbol),
+      CSV.read(locations[:game_teams], headers: true, header_converters: :symbol))
   end
 
   def highest_total_score
-    all_goals.max
+    @game_stats.highest_total_score
   end
 
   def lowest_total_score
-    all_goals.min
+    @game_stats.lowest_total_score
   end
 
   def percentage_home_wins
-    home_wins = []
-    all_home_games = []
-
-    @game_teams.each do |row|
-      home_wins << row if row[:hoa] == "home" && row[:result] == "WIN"
-      all_home_games << row if row[:hoa] == "home"
-    end
-
-    ((home_wins.count / all_home_games.count.to_f).round(2))
+    @game_stats.percentage_home_wins
   end
 
   def percentage_visitor_wins
-    vistor_wins = []
-    all_vistor_games = []
-
-    @game_teams.each do |row|
-      vistor_wins << row if row[:hoa] == "away" && row[:result] == "WIN"
-      all_vistor_games << row if row[:hoa] == "away"
-    end
-
-    ((vistor_wins.count / all_vistor_games.count.to_f).round(2))
+    @game_stats.percentage_visitor_wins
   end
 
   def percentage_ties
-    ties = []
-    all_games = []
-
-    @game_teams.each do |row|
-      ties << row if row[:result] == "TIE"
-      all_games << row[:result]
-    end
-
-    ((ties.count / all_games.count.to_f).round(2))
+    @game_stats.percentage_ties
   end
 
   def count_of_games_by_season
-    #hash
-    game_count_by_season = Hash.new { 0 }
-
-    games.each do |game|
-      season_key = game[:season]
-
-      if game_count_by_season[season_key].nil?
-      end
-
-      game_count_by_season[season_key] += 1
-    end
-
-    game_count_by_season
-  end
-
-  def total_goals
-    home_goals = 0
-    away_goals = 0
-    total_goals = 0
-
-    @games.each do |game|
-      home_goals += game[:home_goals].to_i
-      away_goals += game[:away_goals].to_i
-    end
-
-    total_goals = (home_goals + away_goals)
-  end
-
-  def total_games
-    count_of_games_by_season.values.sum
+    @game_stats.count_of_games_by_season
   end
 
   def average_goals_per_game
-    (total_goals / total_games.to_f).round(2)
+    @game_stats.average_goals_per_game
   end
 
   def average_goals_by_season
-    total_games_per_season = Hash.new { |hash, season| hash[season] = [] }
-
-    @games.each do |game|
-      home_goals = game[:home_goals].to_i
-      away_goals = game[:away_goals].to_i
-      total_game_goals = (home_goals + away_goals)
-      total_games_per_season[game[:season]] << total_game_goals
-    end
-
-    average_games_per_season = total_games_per_season.map { |season, games| [season, (games.sum / games.size.to_f).round(2)] }.to_h
+    @game_stats.average_goals_by_season
   end
 
   def team_info(search_team_id)
@@ -137,25 +68,20 @@ class StatTracker
   end
 
   def best_season(search_team_id)
-    data = @data_warehouse.season_stats(search_team_id)
+    data = @data_warehouse.seasons_ranked(search_team_id)
     team_stats = TeamStats.new(data)
     team_stats.best_season
   end
 
   def worst_season(search_team_id)
-    data = @data_warehouse.season_stats(search_team_id)
+    data = @data_warehouse.seasons_ranked(search_team_id)
     team_stats = TeamStats.new(data)
     team_stats.worst_season
   end
 
   def average_win_percentage(search_team_id)
-    all_win_info = []
-      @data_warehouse.game_teams.each do |game_team|
-        if game_team[:result] == "WIN" && game_team[:team_id] == search_team_id
-          all_win_info << game_team[:game_id]
-        end
-      end
-    all_win_info = (all_win_info.count.to_f / @data_warehouse.game_teams.count.to_f).round(2)
+    (@data_warehouse.all_wins(search_team_id).count.to_f /
+    @data_warehouse.all_games(search_team_id).count).round(2)
   end
 
   def most_goals_scored(search_team_id)
@@ -183,14 +109,12 @@ class StatTracker
   end
 
   def winningest_coach(target_season)
-    data = @data_warehouse.data_by_season(target_season)
-    season_stats = SeasonStats.new(data)
+    season_stats = SeasonStats.new(@data_warehouse.data_by_season(target_season))
     season_stats.winningest_coach
   end
 
   def worst_coach(target_season)
-    data = @data_warehouse.data_by_season(target_season)
-    season_stats = SeasonStats.new(data)
+    season_stats = SeasonStats.new(@data_warehouse.data_by_season(target_season))
     season_stats.worst_coach
   end
 

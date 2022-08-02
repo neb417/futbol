@@ -5,11 +5,11 @@ class TeamStats
   end
 
   def best_season
-    ((@data[0].tally.values.sort.last.to_f / @data[1]) * 100).round(2).to_s
+    win_percentage_by_season.max_by{|season, w_p| w_p}.first
   end
 
   def worst_season
-    ((@data[0].tally.values.sort.first.to_f / @data[1]) * 100).round(2).to_s
+    win_percentage_by_season.max_by{|season, w_p| -w_p}.first
   end
 
   def most_goals_scored(search_team_id)
@@ -21,55 +21,50 @@ class TeamStats
   end
 
   def favorite_opponent(search_team_id)
-    team_id = opponent_name(search_team_id).last.first
-    team_name = ""
-    @data.teams.each do |team|
-      if team[:team_id] == team_id
-        team_name << team[:teamname]
-      end
+    fave_opponent_id = win_percent_by_team(search_team_id).max_by do
+      |team, percentage| -percentage
     end
-    team_name
+    @data.id_team_key[fave_opponent_id.first]
   end
 
-  def rival(serach_team_id)
-    team_id = opponent_name(search_team_id).first.first
-    team_name = ""
-    @data.teams.each do |team|
-      if team[:team_id] == team_id
-        team_name << team[:teamname]
-      end
+  def rival(search_team_id)
+    rival_id = win_percent_by_team(search_team_id).max_by do
+      |team, percentage| percentage
     end
-    team_name
+    @data.id_team_key[rival_id.first]
   end
 
+  private
 
-
-  def opponent_name(search_team_id)
-    all_games_won = []
-    @data.game_teams.each do |game_team|
-      if game_team[:result] == "WIN" && game_team[:team_id] == search_team_id
-        all_games_won << game_team[:game_id]
-      end
-    end
-    all_games_won
-
-    losing_teams = []
-    @data.game_teams.each do |each_team|
-      all_games_won.each do |game_won|
-        if game_won == each_team[:game_id] && each_team[:result] == "LOSS"
-          losing_teams << each_team[:team_id]
-      end
+  def win_percentage_by_season
+    @data[0].tally.map do |season, wins|
+      [season, wins.to_f / @data[1].tally[season]]
     end
   end
-    sorted_losing_teams = losing_teams.tally.sort_by do |key, value|
-    value
+
+  def opponent_games(search_team_id)
+    game_ids = @data.all_games(search_team_id).map{|el| el[0]}
+    @data.game_teams.select do |game|
+      game_ids.include?(game[0]) &&
+      game[1] != search_team_id
     end
+  end
+
+  def win_percent_by_team(search_team_id)
+    all_games_vs = Hash.new{|h, k| h[k] = 0}
+    wins_vs = Hash.new{|h, k| h[k] = 0}
+    opponent_games(search_team_id).each do |game|
+      all_games_vs[game[:team_id]] += 1
+      wins_vs[game[:team_id]] += 1 if game[:result] == "WIN"
+      wins_vs[game[:team_id]] += 0
+    end
+    all_games_vs.map{|team, num_games| [team, wins_vs[team]/num_games.to_f]}
   end
 
   def goals_scored(search_team_id)
     highest_goals_scored = []
       @data.game_teams.each do |game_team|
-      if game_team[:team_id] == search_team_id
+        if game_team[:team_id] == search_team_id
         highest_goals_scored << game_team[:goals]
         end
       end

@@ -1,6 +1,8 @@
 require 'csv'
-require 'stat_tracker'
+
+require_relative 'stat_tracker'
 require 'calculable'
+
 
 class LeagueStats
   include Calculable
@@ -63,7 +65,7 @@ class LeagueStats
   def total_games
     module_sum(games_by_id(:home_team_id), games_by_id(:away_team_id))
   end
- 
+
   def goals_by_id(place_team_id, place_goals)
     goals_scored = Hash.new(0)
     @games.each do |game|

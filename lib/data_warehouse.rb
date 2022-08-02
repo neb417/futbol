@@ -27,21 +27,33 @@ class DataWarehouse
     @teams[:team_id].zip(@teams[:teamname]).to_h
   end
 
-  def season_stats(search_team_id)
+  def seasons_ranked(search_team_id)
+    [games_by_season(all_wins(search_team_id)),
+      games_by_season(all_games(search_team_id))]
+  end
 
-    all_win_info = @game_teams.select do |game_team|
+  def all_wins(search_team_id)
+    @game_teams.select do |game_team|
       game_team[:result] == "WIN" && game_team[:team_id] == search_team_id
     end
+  end
 
-    season_won = []
+  def all_games(search_team_id)
+    @game_teams.select do |game_team|
+      game_team[:team_id] == search_team_id
+    end
+  end
+
+  def games_by_season(filtered_games)
+    season = []
     @games.each do |game|
-      all_win_info.each do |per_game|
+      filtered_games.each do |per_game|
       if per_game[:game_id] == game[:game_id]
-        season_won << game[:season]
+        season << game[:season]
         end
       end
     end
-    [season_won, @games.count]
+    season
   end
 
 end

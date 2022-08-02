@@ -51,8 +51,18 @@ class SeasonStats
       goals[game[:team_id]] += game[:goals].to_f
       shots[game[:team_id]] += game[:shots].to_f
     end
+    calculate_accuracy(goals, shots)
+  end
 
-    
+  # def calculate_accuracy(goals, shots)
+  # accuracy = Hash.new
+  # goals.each do |team, goals|
+  #   accuracy[team] = goals / shots[team]
+  # end
+  # accuracy
+  
+    #unsure what to do with merge conflict.
+    #comment out method from AMR_game_stat_class branch above
 
     module_ratio(goals, shots)
     # team_id_accuracy = Hash.new
@@ -71,8 +81,22 @@ class SeasonStats
     coaches_and_results.each do |result, coach|
       wins[coach] += 1 if result == "WIN"
       all_games[coach] += 1
+      wins[coach] += 0
     end
+    calculate_win_percentage(wins, all_games)
+  end
 
+
+ # def calculate_win_percentage(wins, all_games)
+ #  win_percentage = Hash.new
+ #  wins.map do |coach, num_wins|
+ #    win_percentage[coach] = num_wins.to_f / all_games[coach]
+ #  end
+ #  win_percentage
+
+    #unsure what to do with merge conflict.
+    #comment out method from AMR_game_stat_class branch above
+    
     module_ratio(wins, all_games)
 
     # win_percentage = Hash.new
