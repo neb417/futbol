@@ -7,9 +7,9 @@ require 'pry'
 
 RSpec.describe(StatTracker) do
   before(:each) do
-    game_path = "./data/games_dummy.csv"
+    game_path = "./data/games.csv"
     team_path = "./data/teams.csv"
-    game_teams_path = "./data/game_teams_dummy.csv"
+    game_teams_path = "./data/game_teams.csv"
     locations = {games: game_path, teams: team_path, game_teams: game_teams_path}
     @stat_tracker = StatTracker.from_csv(locations)
   end
@@ -104,11 +104,11 @@ RSpec.describe(StatTracker) do
   end
 
   it "favorite opponent" do
-    expect(@stat_tracker.favorite_opponent("16")).to eq("Orlando City SC")
+    expect(@stat_tracker.favorite_opponent("16")).to eq("New York City FC")
   end
 
   it "rival" do
-    expect(@stat_tracker.rival("16")).to eq("Atlanta United")
+    expect(@stat_tracker.rival("16")).to eq("Portland Timbers")
   end
 
   context 'Season statistics' do

@@ -60,7 +60,6 @@ class GameStats
       total_game_goals = (home_goals + away_goals)
       total_games_per_season[game[:season]] << total_game_goals
     end
-
     total_games_per_season.map { |season, games| [season, (games.sum / games.size.to_f).round(2)] }.to_h
   end
 
@@ -69,7 +68,6 @@ class GameStats
   def percentage_result(hoa, result)
     num_count = 0
     denom_count = 0
-
     @game_teams.each do |row|
       num_count += 1 if row[:hoa] == hoa && row[:result] == result
       denom_count += 1 if row[:hoa] == hoa
@@ -78,11 +76,9 @@ class GameStats
   end
 
   def all_goals
-      #array of all goals
     goals = @games.map do |row|
       row[:away_goals].to_i + row[:home_goals].to_i
     end
-
     goals
   end
 

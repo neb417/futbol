@@ -34,6 +34,8 @@ class TeamStats
     @data.id_team_key[rival_id.first]
   end
 
+  private
+
   def win_percentage_by_season
     @data[0].tally.map do |season, wins|
       [season, wins.to_f / @data[1].tally[season]]
