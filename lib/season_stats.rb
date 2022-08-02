@@ -19,7 +19,7 @@ class SeasonStats
   end
 
   def least_accurate_team
-    team_id_highest_accuracy = team_id_accuracy.max_by{|team, acc| acc}.first
+    team_id_highest_accuracy = team_id_accuracy.max_by{|team, acc| -acc}.first
     @id_team_key[team_id_highest_accuracy]
   end
 
@@ -62,6 +62,7 @@ class SeasonStats
     coaches_and_results.each do |result, coach|
       wins[coach] += 1 if result == "WIN"
       all_games[coach] += 1
+      wins[coach] += 0
     end
     calculate_win_percentage(wins, all_games)
   end

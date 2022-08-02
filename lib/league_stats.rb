@@ -1,5 +1,5 @@
 require 'csv'
-require 'stat_tracker'
+require_relative 'stat_tracker'
 
 class LeagueStats
 
@@ -65,7 +65,7 @@ class LeagueStats
       home_games + away_games
     end
   end
- 
+
   def goals_by_id(place_team_id, place_goals)
     goals_scored = Hash.new(0)
     @games.each do |game|
@@ -77,11 +77,11 @@ class LeagueStats
   def total_goals
     goals_by_id(:home_team_id, :home_goals).merge(goals_by_id(:away_team_id,:away_goals)) do |id, home_goals, away_goals|
       home_goals + away_goals
-    end 
+    end
   end
 
   def goals_per_game
-    total_goals.merge(total_games) do |key, goals, games| 
+    total_goals.merge(total_games) do |key, goals, games|
       goals.to_f / games
     end
   end
