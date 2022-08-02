@@ -21,17 +21,15 @@ class TeamStats
   end
 
   def favorite_opponent(search_team_id)
-    fave_opponent_id = win_percent_by_team(search_team_id).max_by do
+    win_percent_by_team(search_team_id).max_by do
       |team, percentage| -percentage
     end
-    @data.id_team_key[fave_opponent_id.first]
   end
 
   def rival(search_team_id)
-    rival_id = win_percent_by_team(search_team_id).max_by do
+    win_percent_by_team(search_team_id).max_by do
       |team, percentage| percentage
     end
-    @data.id_team_key[rival_id.first]
   end
 
   private
@@ -43,10 +41,17 @@ class TeamStats
   end
 
   def opponent_games(search_team_id)
-    game_ids = @data.all_games(search_team_id).map{|el| el[0]}
-    @data.game_teams.select do |game|
+    game_ids = all_games(search_team_id).map{|el| el[0]}
+    @data.select do |game|
       game_ids.include?(game[0]) &&
       game[1] != search_team_id
+    end
+  end
+
+
+  def all_games(search_team_id)
+    @data.select do |game_team|
+      game_team[:team_id] == search_team_id
     end
   end
 
@@ -63,7 +68,7 @@ class TeamStats
 
   def goals_scored(search_team_id)
     highest_goals_scored = []
-      @data.game_teams.each do |game_team|
+      @data.each do |game_team|
         if game_team[:team_id] == search_team_id
         highest_goals_scored << game_team[:goals]
         end

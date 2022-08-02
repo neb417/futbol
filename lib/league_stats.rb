@@ -3,15 +3,9 @@ require_relative 'stat_tracker'
 
 class LeagueStats
 
-  def initialize(data)
-    @games = data.games
-    @teams = data.teams
-    @game_teams = data.game_teams
-    @id_team_key = data.id_team_key
-  end
-
-  def count_of_teams
-    @teams.count
+  def initialize(data, id_team_key)
+    @games = data
+    @id_team_key = id_team_key
   end
 
   def best_offense
