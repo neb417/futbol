@@ -21,10 +21,6 @@ class DataWarehouse
     end
   end
 
-  def id_team_key
-    @teams[:team_id].zip(@teams[:teamname]).to_h
-  end
-
   def seasons_ranked(search_team_id)
     [games_by_season(all_wins(search_team_id)), games_by_season(all_games(search_team_id))]
   end
