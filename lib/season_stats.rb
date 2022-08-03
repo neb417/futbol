@@ -41,6 +41,7 @@ class SeasonStats
   def team_id_accuracy
     goals = Hash.new(0)
     shots = Hash.new(0)
+
     @data.each do |game|
       goals[game[:team_id]] += game[:goals].to_f
       shots[game[:team_id]] += game[:shots].to_f
@@ -49,25 +50,29 @@ class SeasonStats
   end
 
   def coach_win_percentage
-    coaches_and_results= @data.map do |game|
-                            [game[:result], game[:head_coach]]
-                          end
+    coaches_and_results = @data.map do |game|
+      [game[:result], game[:head_coach]]
+    end
+
     wins = Hash.new(0)
     all_games = Hash.new(0)
+
     coaches_and_results.each do |result, coach|
       wins[coach] += 1 if result == "WIN"
       all_games[coach] += 1
       wins[coach] += 0
     end
+
     module_ratio(wins, all_games)
   end
 
   def num_tackles
     id_tackles = Hash.new(0)
+
     @data.each do |game|
       id_tackles[game[:team_id]] += game[:tackles].to_i
     end
+
     id_tackles
   end
-
 end
