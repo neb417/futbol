@@ -150,7 +150,7 @@ class StatTracker < DataWarehouse
   end
 
   def league_stats
-    LeagueStats.new(@games, @game_teams)
+    LeagueStats.new(@games, id_team_key)
   end
 
   def game_stats
