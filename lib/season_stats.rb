@@ -51,10 +51,6 @@ class SeasonStats
   end
 
   def coach_win_percentage
-    coaches_and_results = @data.map do |game|
-      [game[:result], game[:head_coach]]
-    end
-    
     wins = Hash.new(0)
     all_games = Hash.new(0)
 
@@ -65,6 +61,12 @@ class SeasonStats
     end
     module_ratio(wins, all_games)
 
+  end
+
+  def coaches_and_results
+    coaches_and_results = @data.map do |game|
+      [game[:result], game[:head_coach]]
+    end
   end
   
   def num_tackles
