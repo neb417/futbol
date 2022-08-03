@@ -28,7 +28,7 @@ RSpec.describe(DataWarehouse) do
     expect(@data_warehouse.id_team_key).is_a?(Hash)
   end
 
-  xit("seasons_ranked") do
+  it("seasons_ranked") do
     expect(@data_warehouse.seasons_ranked("16")).is_a?(Array)
   end
 
