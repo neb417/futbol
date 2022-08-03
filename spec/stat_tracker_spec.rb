@@ -1,9 +1,9 @@
-require './lib/stat_tracker'
-require './lib/league_stats'
-require './lib/season_stats'
-require './lib/data_warehouse'
-require './lib/team_stats'
-require 'pry'
+require "./lib/stat_tracker"
+require "./lib/league_stats"
+require "./lib/season_stats"
+require "./lib/data_warehouse"
+require "./lib/team_stats"
+
 
 RSpec.describe(StatTracker) do
   before(:each) do
@@ -14,10 +14,10 @@ RSpec.describe(StatTracker) do
     @stat_tracker = StatTracker.from_csv(locations)
   end
 
-  it '1. exists' do
-    expect(@stat_tracker).to be_an_instance_of StatTracker
+  it("exists") do
+    expect(@stat_tracker).to(be_an_instance_of(StatTracker))
   end
-
+  
   it '3. can load an array of multiple CSVs' do
     expect(@stat_tracker.games).to be_a(CSV::Table)
     expect(@stat_tracker.teams).to be_a(CSV::Table)
@@ -50,7 +50,6 @@ RSpec.describe(StatTracker) do
   end
 
   it("#6 count_of_games_by_season") do
-
     expected = {
       "20122013" => 806,
       "20162017" => 1317,
@@ -64,13 +63,11 @@ RSpec.describe(StatTracker) do
     expect(@stat_tracker.count_of_games_by_season).to(eq(expected))
   end
 
-  it("#7 average number of goals scored in a game across all seasons including both home and away goals") do
-    allow(@stat_tracker).to receive(:game_stats).and_return(instance_double(GameStats, average_goals_per_game:4.22))
+  it("average number of goals scored in a game across all seasons including both home and away goals") do
     expect(@stat_tracker.average_goals_per_game).to(eq(4.22))
   end
 
-  it("#8 average_goals_by_season") do
-
+  it("average_goals_by_season") do
     expected = {
       "20122013" => 4.12,
       "20162017" => 4.23,
@@ -83,7 +80,7 @@ RSpec.describe(StatTracker) do
     expect(@stat_tracker.average_goals_by_season).to(eq(expected))
   end
 
-  it("A hash with key/value pairs for the following attributes") do
+  it("a hash with key/value pairs for the following attributes") do
     expected = {
       "team_id" => "1",
       "franchise_id" => "23",
@@ -94,7 +91,7 @@ RSpec.describe(StatTracker) do
     allow(@stat_tracker).to receive(:team_info).and_return(expected)
     expect(@stat_tracker.team_info("1")).to(eq(expected))
   end
-
+  
   it "seasons with highest win percentange for team" do
     allow(@stat_tracker).to receive(:best_season).and_return("20122013")
     expect(@stat_tracker.best_season("16")).to eq("20122013")

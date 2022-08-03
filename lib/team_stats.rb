@@ -1,15 +1,20 @@
+require_relative 'calculable'
+
 class TeamStats
+  include Calculable
+
   attr_reader :data
+
   def initialize(data)
     @data = data
   end
 
   def best_season
-    win_percentage_by_season.max_by{|season, w_p| w_p}.first
+    module_highest(win_percentage_by_season)
   end
 
   def worst_season
-    win_percentage_by_season.max_by{|season, w_p| -w_p}.first
+    module_lowest(win_percentage_by_season)
   end
 
   def most_goals_scored(search_team_id)
@@ -21,15 +26,14 @@ class TeamStats
   end
 
   def favorite_opponent(search_team_id)
-    win_percent_by_team(search_team_id).max_by do
-      |team, percentage| -percentage
-    end
+
+    fave_opponent_id = module_lowest(win_percent_by_team(search_team_id))
+    @data.id_team_key[fave_opponent_id]
   end
 
   def rival(search_team_id)
-    win_percent_by_team(search_team_id).max_by do
-      |team, percentage| percentage
-    end
+    rival_id = module_highest(win_percent_by_team(search_team_id))
+    @data.id_team_key[rival_id]
   end
 
   private

@@ -6,6 +6,7 @@ require 'csv'
 RSpec.describe SeasonStats do
   before :each do
     game_path = "./data/games.csv"
+
     team_path = "./data/teams.csv"
     game_teams_path = "./data/game_teams.csv"
     locations = {games: game_path, teams: team_path, game_teams: game_teams_path}
@@ -42,5 +43,4 @@ RSpec.describe SeasonStats do
     expect(@stat_tracker.fewest_tackles("20132014")).to eq "Atlanta United"
     expect(@stat_tracker.fewest_tackles("20142015")).to eq "Orlando City SC"
   end
-
 end

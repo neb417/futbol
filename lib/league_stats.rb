@@ -1,47 +1,46 @@
 require 'csv'
+
 require_relative 'stat_tracker'
+require_relative 'calculable'
+
 
 class LeagueStats
+  include Calculable
 
   def initialize(data, id_team_key)
     @games = data
     @id_team_key = id_team_key
+ # def initialize(data)
+  #  @games = data.games
+   # @teams = data.teams
+  #end
+
+  #def count_of_teams
+   # @teams.count
   end
 
   def best_offense
-    @id_team_key.find do |id, team|
-      return team if id == goals_per_game.max_by {|id, goals| goals}.first
-    end
+    team_finder(module_highest(goals_per_game))
   end
 
   def worst_offense
-    @id_team_key.find do |id, team|
-      return team if id == goals_per_game.min_by {|id, goals| goals}.first
-    end
+    team_finder(module_lowest(goals_per_game))
   end
 
   def highest_scoring_visitor
-    @id_team_key.find do |id, team|
-      return team if id == highest_goals_per_game_place(:away_team_id, :away_goals)
-    end
+    team_finder(highest_goals_per_game_place(:away_team_id, :away_goals))
   end
 
   def highest_scoring_home_team
-    @id_team_key.find do |id, team|
-      return team if id == highest_goals_per_game_place(:home_team_id, :home_goals)
-    end
+    team_finder(highest_goals_per_game_place(:home_team_id, :home_goals))
   end
 
   def lowest_scoring_visitor
-    @id_team_key.find do |id, team|
-      return team if id == lowest_goals_per_game_place(:away_team_id, :away_goals)
-    end
+    team_finder(lowest_goals_per_game_place(:away_team_id, :away_goals))
   end
 
   def lowest_scoring_home_team
-    @id_team_key.find do |id, team|
-      return team if id == lowest_goals_per_game_place(:home_team_id, :home_goals)
-    end
+    team_finder(lowest_goals_per_game_place(:home_team_id, :home_goals))
   end
 
   private
@@ -55,9 +54,7 @@ class LeagueStats
   end
 
   def total_games
-    games_by_id(:home_team_id).merge(games_by_id(:away_team_id)) do |id, home_games, away_games|
-      home_games + away_games
-    end
+    module_sum(games_by_id(:home_team_id), games_by_id(:away_team_id))
   end
 
   def goals_by_id(place_team_id, place_goals)
@@ -69,26 +66,20 @@ class LeagueStats
   end
 
   def total_goals
-    goals_by_id(:home_team_id, :home_goals).merge(goals_by_id(:away_team_id,:away_goals)) do |id, home_goals, away_goals|
-      home_goals + away_goals
-    end
+    module_sum(goals_by_id(:home_team_id, :home_goals), goals_by_id(:away_team_id,:away_goals))
   end
 
   def goals_per_game
-    total_goals.merge(total_games) do |key, goals, games|
-      goals.to_f / games
-    end
+    module_ratio(total_goals, total_games)
   end
 
   def highest_goals_per_game_place(place_team_id, place_goals)
-   goal_rate = goals_by_id(place_team_id, place_goals).merge(games_by_id(place_team_id)) do |key, goals, games|
-      goals.to_f/games
-    end.max_by {|id,goals| goals}.first
+    goal_rate = module_ratio(goals_by_id(place_team_id, place_goals), games_by_id(place_team_id))
+    module_highest(goal_rate)
   end
 
   def lowest_goals_per_game_place(place_team_id, place_goals)
-    goals_by_id(place_team_id, place_goals).merge(games_by_id(place_team_id)) do |key, goals, games|
-       goals.to_f/games
-     end.min_by {|id,goals| goals}.first
+     goal_rate = module_ratio(goals_by_id(place_team_id, place_goals), games_by_id(place_team_id))
+     module_lowest(goal_rate)
    end
 end

@@ -5,8 +5,11 @@ require_relative "game_stats"
 require_relative "league_stats"
 require_relative "team_stats"
 require_relative "season_stats"
+require_relative "calculable"
 
 class StatTracker < DataWarehouse
+  include Calculable
+
   attr_reader :data_warehouse
 
   def initialize(games, teams, game_teams)
