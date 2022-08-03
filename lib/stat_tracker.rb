@@ -11,8 +11,6 @@ class StatTracker < DataWarehouse
 
   def initialize(games, teams, game_teams)
     super(games,teams,game_teams)
-    # @game_stats = GameStats.new(@games, id_team_key)
-    # @league_stats = LeagueStats.new(@games, @game_teams)
   end
 
   def self.from_csv(locations)
@@ -90,27 +88,27 @@ class StatTracker < DataWarehouse
   end
 
   def winningest_coach(target_season)
-    season_stats.winningest_coach
+    season_stats(target_season).winningest_coach
   end
 
   def worst_coach(target_season)
-    season_stats.worst_coach
+    season_stats(target_season).worst_coach
   end
 
   def most_accurate_team(target_season)
-    season_stats.most_accurate_team
+    season_stats(target_season).most_accurate_team
   end
 
   def least_accurate_team(target_season)
-    season_stats.least_accurate_team
+    season_stats(target_season).least_accurate_team
   end
 
   def most_tackles(target_season)
-    season_stats.most_tackles
+    season_stats(target_season).most_tackles
   end
 
   def fewest_tackles(target_season)
-    season_stats.fewest_tackles
+    season_stats(target_season).fewest_tackles
   end
 
   def count_of_teams
