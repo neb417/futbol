@@ -142,7 +142,7 @@ class StatTracker < DataWarehouse
   private
 
   def team_stats
-    team_stats = TeamStats.new(@game_teams)
+    TeamStats.new(@game_teams)
   end
 
   def season_stats(target_season)
