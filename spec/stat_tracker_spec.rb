@@ -120,12 +120,12 @@ RSpec.describe(StatTracker) do
   end
 
   it "favorite opponent" do
-    allow(@stat_tracker).to receive(:team_stats).and_return(instance_double(TeamStats, favorite_opponent:["9"]))
+    allow(@stat_tracker).to receive(:team_stats).and_return(instance_double(TeamStats, favorite_opponent:"9"))
     expect(@stat_tracker.favorite_opponent("16")).to eq("New York City FC")
   end
 
   it "rival" do
-    allow(@stat_tracker).to receive(:team_stats).and_return(instance_double(TeamStats, rival:["15"]))
+    allow(@stat_tracker).to receive(:team_stats).and_return(instance_double(TeamStats, rival:"15"))
     expect(@stat_tracker.rival("16")).to eq("Portland Timbers")
   end
 
