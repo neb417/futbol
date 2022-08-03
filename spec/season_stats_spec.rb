@@ -15,7 +15,7 @@ RSpec.describe SeasonStats do
       CSV.read(locations[:game_teams], headers: true, header_converters: :symbol)
     )
     data = @warehouse.data_by_season("20122013")
-    require "pry"; binding.pry
+    # require "pry"; binding.pry
     
     id_team_key = @warehouse.id_team_key
     @season_stats = SeasonStats.new(data, id_team_key)

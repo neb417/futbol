@@ -1,4 +1,4 @@
-require 'calculable'
+require_relative 'calculable'
 
 class SeasonStats
   include Calculable
@@ -21,6 +21,7 @@ class SeasonStats
   def most_accurate_team
     team_id_highest_accuracy = module_highest(team_id_accuracy)
     # team_id_highest_accuracy = team_id_accuracy.max_by{|team, acc| acc}.first
+    # team_finder(module_highest(team_id_accuracy))
     @id_team_key[team_id_highest_accuracy]
   end
 
@@ -51,26 +52,27 @@ class SeasonStats
       goals[game[:team_id]] += game[:goals].to_f
       shots[game[:team_id]] += game[:shots].to_f
     end
-    calculate_accuracy(goals, shots)
+    module_ratio(goals, shots)
+    # calculate_accuracy(goals, shots)
   end
 
   # def calculate_accuracy(goals, shots)
-  # accuracy = Hash.new
-  # goals.each do |team, goals|
-  #   accuracy[team] = goals / shots[team]
-  # end
-  # accuracy
+  # # accuracy = Hash.new
+  # # goals.each do |team, goals|
+  # #   accuracy[team] = goals / shots[team]
+  # # end
+  # # accuracy
   
-    #unsure what to do with merge conflict.
-    #comment out method from AMR_game_stat_class branch above
+  #   #unsure what to do with merge conflict.
+  #   #comment out method from AMR_game_stat_class branch above
 
-    module_ratio(goals, shots)
-    # team_id_accuracy = Hash.new
-    # goals.each do |team, goals|
-    #   team_id_accuracy[team] = goals / shots[team]
-    # end
-    # team_id_accuracy
-  end
+  #   module_ratio(goals, shots)
+  #   # team_id_accuracy = Hash.new
+  #   # goals.each do |team, goals|
+  #   #   team_id_accuracy[team] = goals / shots[team]
+  #   # end
+  #   # team_id_accuracy
+  # end
 
   def coach_win_percentage
     coaches_and_results= @data.map do |game|
@@ -87,7 +89,7 @@ class SeasonStats
   end
 
 
- # def calculate_win_percentage(wins, all_games)
+ def calculate_win_percentage(wins, all_games)
  #  win_percentage = Hash.new
  #  wins.map do |coach, num_wins|
  #    win_percentage[coach] = num_wins.to_f / all_games[coach]
