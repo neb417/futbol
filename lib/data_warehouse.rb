@@ -27,9 +27,6 @@ class DataWarehouse
 
   def seasons_ranked(search_team_id)
     [games_by_season(all_wins(search_team_id)), games_by_season(all_games(search_team_id))]
-    require "pry"
-
-    binding.pry
   end
 
   def all_wins(search_team_id)

@@ -13,57 +13,42 @@ RSpec.describe(TeamStats) do
     @stat_tracker = StatTracker.from_csv(locations)
   end
 
-  def team_info(search_team_id)
-    team_search_info = @data_warehouse.teams.find do |team|
-      team[:team_id] == search_team_id
-    end
-
-    {
-      "team_id" => team_search_info[:team_id],
-      "franchise_id" => team_search_info[:franchiseid],
-      "team_name" => team_search_info[:teamname],
-      "abbreviation" => team_search_info[:abbreviation],
-      "link" => team_search_info[:link],
+  it("a hash with key/value pairs for the following attributes") do
+    expected = {
+      "team_id" => "1",
+      "franchise_id" => "23",
+      "team_name" => "Atlanta United",
+      "abbreviation" => "ATL",
+      "link" => "/api/v1/teams/1",
     }
+    expect(@stat_tracker.team_info("1")).to(eq(expected))
   end
 
-  def best_season(search_team_id)
-    data = @data_warehouse.seasons_ranked(search_team_id)
-    team_stats = TeamStats.new(data)
-    team_stats.best_season
+  it("seasons with highest win percentange for team") do
+    expect(@stat_tracker.best_season("16")).to(eq("20122013"))
   end
 
-  def worst_season(search_team_id)
-    data = @data_warehouse.seasons_ranked(search_team_id)
-    team_stats = TeamStats.new(data)
-    team_stats.worst_season
+  it("seasons with lowest win percentage for team") do
+    expect(@stat_tracker.worst_season("16")).to(eq("20172018"))
   end
 
-  def average_win_percentage(search_team_id)
-    (@data_warehouse.all_wins(search_team_id).count.to_f / @data_warehouse.all_games(search_team_id).count).round(2)
+  it("average win percentage of all games for a team") do
+    expect(@stat_tracker.average_win_percentage("16")).to(eq(0.44))
   end
 
-  def most_goals_scored(search_team_id)
-    data = @data_warehouse
-    team_stats = TeamStats.new(data)
-    team_stats.most_goals_scored(search_team_id)
+  it("highest number of goals scored in a game") do
+    expect(@stat_tracker.most_goals_scored("16")).to(eq(8))
   end
 
-  def fewest_goals_scored(search_team_id)
-    data = @data_warehouse
-    team_stats = TeamStats.new(data)
-    team_stats.fewest_goals_scored(search_team_id)
+  it("lowest number of goals scored in a game") do
+    expect(@stat_tracker.fewest_goals_scored("16")).to(eq(0))
   end
 
-  def favorite_opponent(search_team_id)
-    data = @data_warehouse
-    team_stats = TeamStats.new(data)
-    team_stats.favorite_opponent(search_team_id)
+  it("favorite opponent") do
+    expect(@stat_tracker.favorite_opponent("16")).to(eq("New York City FC"))
   end
 
-  def rival(search_team_id)
-    data = @data_warehouse
-    team_stats = TeamStats.new(data)
-    team_stats.rival(search_team_id)
+  it("rival") do
+    expect(@stat_tracker.rival("16")).to(eq("Portland Timbers"))
   end
 end
