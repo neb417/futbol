@@ -5,7 +5,7 @@ require "./lib/data_warehouse"
 require "./lib/game_stats"
 
 
-RSpec.describe(StatTracker) do
+RSpec.describe(GameStats) do
   before(:each) do
     game_path = "./data/games.csv"
     team_path = "./data/teams.csv"
