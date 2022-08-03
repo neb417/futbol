@@ -70,8 +70,7 @@ class StatTracker < DataWarehouse
   end
 
   def average_win_percentage(search_team_id)
-    (all_wins(search_team_id).count.to_f /
-    all_games(search_team_id).count).round(2)
+    (all_wins(search_team_id).count.to_f / all_games(search_team_id).count).round(2)
   end
 
   def most_goals_scored(search_team_id)
@@ -83,11 +82,11 @@ class StatTracker < DataWarehouse
   end
 
   def favorite_opponent(search_team_id)
-    id_team_key[team_stats.favorite_opponent(search_team_id).first]
+    id_team_key[team_stats.favorite_opponent(search_team_id)]
   end
 
   def rival(search_team_id)
-    id_team_key[team_stats.rival(search_team_id).first]
+    id_team_key[team_stats.rival(search_team_id)]
   end
 
   def winningest_coach(target_season)

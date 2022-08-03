@@ -26,14 +26,11 @@ class TeamStats
   end
 
   def favorite_opponent(search_team_id)
-
-    fave_opponent_id = module_lowest(win_percent_by_team(search_team_id))
-    @data.id_team_key[fave_opponent_id]
+    module_lowest(win_percent_by_team(search_team_id))
   end
 
   def rival(search_team_id)
-    rival_id = module_highest(win_percent_by_team(search_team_id))
-    @data.id_team_key[rival_id]
+    module_highest(win_percent_by_team(search_team_id))
   end
 
   private

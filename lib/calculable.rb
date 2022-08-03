@@ -30,7 +30,7 @@ module Calculable
 
   def team_finder(input)
     #input can be method with arguments. ex team_finder(lowest_goals_per_game_place(:home_team_id, :home_goals))
-    id_team_key.find do |id, team|
+    @id_team_key.find do |id, team|
       return team if id == input
     end
   end
