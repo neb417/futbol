@@ -17,34 +17,39 @@ RSpec.describe(StatTracker) do
   it("exists") do
     expect(@stat_tracker).to(be_an_instance_of(StatTracker))
   end
-
-  it("can load an array of multiple CSVs") do
-    expect(@stat_tracker.data_warehouse.games).to(be_a(CSV::Table))
-    expect(@stat_tracker.data_warehouse.teams).to(be_a(CSV::Table))
-    expect(@stat_tracker.data_warehouse.game_teams).to(be_a(CSV::Table))
+  
+  it '3. can load an array of multiple CSVs' do
+    expect(@stat_tracker.games).to be_a(CSV::Table)
+    expect(@stat_tracker.teams).to be_a(CSV::Table)
+    expect(@stat_tracker.game_teams).to be_a(CSV::Table)
   end
 
-  it("has highest_total_score") do
+  it("#1 has highest_total_score") do
+    allow(@stat_tracker).to receive(:game_stats).and_return(instance_double(GameStats, highest_total_score:11))
     expect(@stat_tracker.highest_total_score).to(eq(11))
   end
 
-  it("lowest_total_score") do
+  it("#2 lowest_total_score") do
+    allow(@stat_tracker).to receive(:game_stats).and_return(instance_double(GameStats, lowest_total_score:0))
     expect(@stat_tracker.lowest_total_score).to(eq(0))
   end
 
-  it("percentage of games that a home team has won ") do
+  it("#3 Percentage of games that a home team has won ") do
+    allow(@stat_tracker).to receive(:game_stats).and_return(instance_double(GameStats, percentage_home_wins:0.44))
     expect(@stat_tracker.percentage_home_wins).to(eq(0.44))
   end
 
-  it("percentage_visitor_wins") do
+  it("#4 percentage_visitor_wins") do
+    allow(@stat_tracker).to receive(:game_stats).and_return(instance_double(GameStats, percentage_visitor_wins:0.36))
     expect(@stat_tracker.percentage_visitor_wins).to(eq(0.36))
   end
 
-  it("percentage_ties") do
+  it("#5 percentage_ties") do
+    allow(@stat_tracker).to receive(:game_stats).and_return(instance_double(GameStats, percentage_ties:0.20))
     expect(@stat_tracker.percentage_ties).to(eq(0.20))
   end
 
-  it("count_of_games_by_season") do
+  it("#6 count_of_games_by_season") do
     expected = {
       "20122013" => 806,
       "20162017" => 1317,
@@ -53,6 +58,8 @@ RSpec.describe(StatTracker) do
       "20132014" => 1323,
       "20172018" => 1355,
     }
+
+    allow(@stat_tracker).to receive(:game_stats).and_return(instance_double(GameStats, count_of_games_by_season:expected))
     expect(@stat_tracker.count_of_games_by_season).to(eq(expected))
   end
 
@@ -69,6 +76,7 @@ RSpec.describe(StatTracker) do
       "20132014" => 4.19,
       "20172018" => 4.44,
     }
+    allow(@stat_tracker).to receive(:game_stats).and_return(instance_double(GameStats, average_goals_by_season:expected))
     expect(@stat_tracker.average_goals_by_season).to(eq(expected))
   end
 
@@ -80,64 +88,76 @@ RSpec.describe(StatTracker) do
       "abbreviation" => "ATL",
       "link" => "/api/v1/teams/1",
     }
+    allow(@stat_tracker).to receive(:team_info).and_return(expected)
     expect(@stat_tracker.team_info("1")).to(eq(expected))
   end
-
-  it("seasons with highest win percentange for team") do
-    expect(@stat_tracker.best_season("16")).to(eq("20122013"))
+  
+  it "seasons with highest win percentange for team" do
+    allow(@stat_tracker).to receive(:best_season).and_return("20122013")
+    expect(@stat_tracker.best_season("16")).to eq("20122013")
   end
 
-  it("seasons with lowest win percentage for team") do
-    expect(@stat_tracker.worst_season("16")).to(eq("20172018"))
+  it "seasons with lowest win percentage for team" do
+    allow(@stat_tracker).to receive(:worst_season).and_return("20172018")
+    expect(@stat_tracker.worst_season("16")).to eq("20172018")
   end
 
-  it("average win percentage of all games for a team") do
-    expect(@stat_tracker.average_win_percentage("16")).to(eq(0.44))
+  it "average win percentage of all games for a team" do
+    allow(@stat_tracker).to receive_message_chain(:all_wins, :count, :to_f){0.44}
+    allow(@stat_tracker).to receive_message_chain(:all_games, :count){1}
+
+    expect(@stat_tracker.average_win_percentage("16")).to eq(0.44)
   end
 
-  it("highest number of goals scored in a game") do
-    expect(@stat_tracker.most_goals_scored("16")).to(eq(8))
+  it "highest number of goals scored in a game" do
+    allow(@stat_tracker).to receive(:team_stats).and_return(instance_double(TeamStats, most_goals_scored:8))
+    expect(@stat_tracker.most_goals_scored("16")).to eq(8)
   end
 
-  it("lowest number of goals scored in a game") do
-    expect(@stat_tracker.fewest_goals_scored("16")).to(eq(0))
+  it "lowest number of goals scored in a game" do
+    allow(@stat_tracker).to receive(:team_stats).and_return(instance_double(TeamStats, fewest_goals_scored:0))
+    expect(@stat_tracker.fewest_goals_scored("16")).to eq(0)
   end
 
-  it("favorite opponent") do
-    expect(@stat_tracker.favorite_opponent("16")).to(eq("New York City FC"))
+  it "favorite opponent" do
+    allow(@stat_tracker).to receive(:team_stats).and_return(instance_double(TeamStats, favorite_opponent:["9"]))
+    expect(@stat_tracker.favorite_opponent("16")).to eq("New York City FC")
   end
 
-  it("rival") do
-    expect(@stat_tracker.rival("16")).to(eq("Portland Timbers"))
+  it "rival" do
+    allow(@stat_tracker).to receive(:team_stats).and_return(instance_double(TeamStats, rival:["15"]))
+    expect(@stat_tracker.rival("16")).to eq("Portland Timbers")
   end
 
-  it("has a method for winningest_coach") do
-    expect(@stat_tracker.data_warehouse.game_teams[:head_coach]).to(include(@stat_tracker.winningest_coach("20122013")))
-    expect(@stat_tracker.winningest_coach("20122013")).to(be_a(String))
-  end
+  context 'Season statistics' do
+    it "#winningest_coach" do
+      allow(@stat_tracker).to receive(:season_stats).and_return(instance_double(SeasonStats, winningest_coach:"Claude Julien"))
+    expect(@stat_tracker.winningest_coach("20132014")).to eq "Claude Julien"
+    end
 
-  it("has a method for worst_coach") do
-    expect(@stat_tracker.data_warehouse.game_teams[:head_coach]).to(include(@stat_tracker.worst_coach("20122013")))
-    expect(@stat_tracker.worst_coach("20122013")).to(be_a(String))
-  end
+    it "#worst_coach" do
+      allow(@stat_tracker).to receive(:season_stats).and_return(instance_double(SeasonStats, worst_coach:"Peter Laviolette"))
+      expect(@stat_tracker.worst_coach("20132014")).to eq "Peter Laviolette"
+    end
 
-  it("can tell most_accurate_team") do
-    expect(@stat_tracker.data_warehouse.teams[:teamname]).to(include(@stat_tracker.most_accurate_team("20122013")))
-    expect(@stat_tracker.most_accurate_team("20122013")).to(be_a(String))
-  end
+    it "#most_accurate_team" do
+      allow(@stat_tracker).to receive(:season_stats).and_return(instance_double(SeasonStats, most_accurate_team:"Real Salt Lake"))
+      expect(@stat_tracker.most_accurate_team("20132014")).to eq "Real Salt Lake"
+    end
 
-  it("can tell least_accurate_team") do
-    expect(@stat_tracker.data_warehouse.teams[:teamname]).to(include(@stat_tracker.least_accurate_team("20122013")))
-    expect(@stat_tracker.least_accurate_team("20122013")).to(be_a(String))
-  end
+    it "#least_accurate_team" do
+      allow(@stat_tracker).to receive(:season_stats).and_return(instance_double(SeasonStats, least_accurate_team:"New York City FC"))
+      expect(@stat_tracker.least_accurate_team("20132014")).to eq "New York City FC"
+    end
 
-  it("can tell the team with the most tackles in a season") do
-    expect(@stat_tracker.data_warehouse.teams[:teamname]).to(include(@stat_tracker.most_tackles("20122013")))
-    expect(@stat_tracker.most_tackles("20122013")).to(be_a(String))
-  end
+    it "#most_tackles" do
+      allow(@stat_tracker).to receive(:season_stats).and_return(instance_double(SeasonStats, most_tackles:"FC Cincinnati"))
+      expect(@stat_tracker.most_tackles("20132014")).to eq "FC Cincinnati"
+    end
 
-  it("can tell the team with the fewest tackles in a season") do
-    expect(@stat_tracker.data_warehouse.teams[:teamname]).to(include(@stat_tracker.fewest_tackles("20122013")))
-    expect(@stat_tracker.fewest_tackles("20122013")).to(be_a(String))
+    it "#fewest_tackles" do
+      allow(@stat_tracker).to receive(:season_stats).and_return(instance_double(SeasonStats, fewest_tackles:"Atlanta United"))
+      expect(@stat_tracker.fewest_tackles("20132014")).to eq "Atlanta United"
+    end
   end
 end

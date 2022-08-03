@@ -54,4 +54,20 @@ class DataWarehouse
 
     season
   end
+
+  def team_search_info(search_team_id)
+    @teams.find do |team|
+      team[:team_id] == search_team_id
+    end
+  end
+
+  def team_info(search_team_id)
+    {
+      "team_id" => team_search_info(search_team_id)[:team_id],
+      "franchise_id" => team_search_info(search_team_id)[:franchiseid],
+      "team_name" => team_search_info(search_team_id)[:teamname],
+      "abbreviation" => team_search_info(search_team_id)[:abbreviation],
+      "link" => team_search_info(search_team_id)[:link]
+    }
+  end
 end

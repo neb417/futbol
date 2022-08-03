@@ -7,13 +7,16 @@ require_relative 'calculable'
 class LeagueStats
   include Calculable
 
-  def initialize(data)
-    @games = data.games
-    @teams = data.teams
-  end
+  def initialize(data, id_team_key)
+    @games = data
+    @id_team_key = id_team_key
+ # def initialize(data)
+  #  @games = data.games
+   # @teams = data.teams
+  #end
 
-  def count_of_teams
-    @teams.count
+  #def count_of_teams
+   # @teams.count
   end
 
   def best_offense

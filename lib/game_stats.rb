@@ -3,10 +3,9 @@ require_relative "stat_tracker"
 require "pry"
 
 class GameStats
-  def initialize(data)
-    @games = data.games
-    @teams = data.teams
-    @game_teams = data.game_teams
+  def initialize(games, game_teams)
+    @games = games
+    @game_teams = game_teams
   end
 
   def highest_total_score

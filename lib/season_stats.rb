@@ -46,14 +46,25 @@ class SeasonStats
       goals[game[:team_id]] += game[:goals].to_f
       shots[game[:team_id]] += game[:shots].to_f
     end
+    
     module_ratio(goals, shots)
   end
+  
+  #unsure what to do with merge conflict.
+  #comment out method from AMR_game_stat_class branch above
+
+  # module_ratio(goals, shots)
 
   def coach_win_percentage
     coaches_and_results = @data.map do |game|
       [game[:result], game[:head_coach]]
     end
 
+  def coach_win_percentage
+    coaches_and_results = @data.map do |game|
+      [game[:result], game[:head_coach]]
+    end
+    
     wins = Hash.new(0)
     all_games = Hash.new(0)
 
@@ -62,9 +73,22 @@ class SeasonStats
       all_games[coach] += 1
       wins[coach] += 0
     end
-
     module_ratio(wins, all_games)
+
   end
+
+  # module_ratio(wins, all_games)
+# def calculate_win_percentage(wins, all_games)
+ #   win_percentage = Hash.new
+  #  wins.map do |coach, num_wins|
+   #   win_percentage[coach] = num_wins.to_f / all_games[coach]
+    #end
+   # win_percentage
+
+
+  #  module_ratio(wins, all_games)
+
+ # end
 
   def num_tackles
     id_tackles = Hash.new(0)
