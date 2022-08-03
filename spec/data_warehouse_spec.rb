@@ -36,7 +36,7 @@ RSpec.describe(DataWarehouse) do
     expect(@data_warehouse.all_wins("3")).is_a?(Array)
   end
 
-  it("all games") do
+  it("alll games") do
     expect(@data_warehouse.all_games("16")).is_a?(Array)
   end
 end
