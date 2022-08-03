@@ -1,7 +1,7 @@
 require 'csv'
 
 require_relative 'stat_tracker'
-require 'calculable'
+require_relative 'calculable'
 
 
 class LeagueStats
@@ -17,39 +17,27 @@ class LeagueStats
   end
 
   def best_offense
-    id_team_key.find do |id, team|
-      return team if id == goals_per_game.max_by {|id, goals| goals}.first
-    end
+    team_finder(module_highest(goals_per_game))
   end
 
   def worst_offense
-    id_team_key.find do |id, team|
-      return team if id == goals_per_game.min_by {|id, goals| goals}.first
-    end
+    team_finder(module_lowest(goals_per_game))
   end
 
   def highest_scoring_visitor
-    id_team_key.find do |id, team|
-      return team if id == highest_goals_per_game_place(:away_team_id, :away_goals)
-    end
+    team_finder(highest_goals_per_game_place(:away_team_id, :away_goals))
   end
 
   def highest_scoring_home_team
-    id_team_key.find do |id, team|
-      return team if id == highest_goals_per_game_place(:home_team_id, :home_goals)
-    end
+    team_finder(highest_goals_per_game_place(:home_team_id, :home_goals))
   end
 
   def lowest_scoring_visitor
-    id_team_key.find do |id, team|
-      return team if id == lowest_goals_per_game_place(:away_team_id, :away_goals)
-    end
+    team_finder(lowest_goals_per_game_place(:away_team_id, :away_goals))
   end
 
   def lowest_scoring_home_team
-    id_team_key.find do |id, team|
-      return team if id == lowest_goals_per_game_place(:home_team_id, :home_goals)
-    end
+    team_finder(lowest_goals_per_game_place(:home_team_id, :home_goals))
   end
 
   private
